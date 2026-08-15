@@ -1,34 +1,38 @@
 [
   {
-    "id": 1,
-    "title": "Program 1",
-    "desc": "-",
+    "id": "cc3d17e3-dddf-411c-83ac-eb5754c698ee",
+    "title": "Marathon",
     "date": "Sat Aug 08 2026 14:38:18 GMT+0700",
-    "min": 10,
-    "max": 70
+    "min_age": 10,
+    "max_age": 70,
+    "bib_prefix": "M",
+    "last_bib_number": 0
   },
   {
-    "id": 1,
-    "title": "Program 2",
-    "desc": "-",
+    "id": "cfc07224-6963-44c8-9eee-d88ea37acd75",
+    "title": "Half Marathon",
     "date": "Sat Aug 08 2026 14:38:18 GMT+0700",
-    "min": 10,
-    "max": 70
+    "min_age": 10,
+    "max_age": 70,
+    "bib_prefix": "H",
+    "last_bib_number": 0
   },
   {
-    "id": 1,
-    "title": "Program 3",
-    "desc": "-",
+    "id": "5cd0fdae-695e-43d6-94b7-671380016d31",
+    "title": "Mini Marathon",
     "date": "Sat Aug 08 2026 14:38:18 GMT+0700",
-    "min": 10,
-    "max": 70
+    "min_age": 10,
+    "max_age": 70,
+    "bib_prefix": "MM",
+    "last_bib_number": 0
   },
   {
-    "id": 1,
-    "title": "TARGET",
-    "desc": "-",
+    "id": "e5a5c1b7-2094-4278-92a8-be647da3e950",
+    "title": "Fun Run",
     "date": "Sat Aug 08 2026 14:38:18 GMT+0700",
-    "min": 10,
-    "max": 70
+    "min_age": 10,
+    "max_age": 70,
+    "bib_prefix": "F",
+    "last_bib_number": 0
   }
 ]
