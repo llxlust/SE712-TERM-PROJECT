@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Registration List</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body class="min-h-screen bg-slate-50 text-slate-900">
+    <main class="mx-auto max-w-7xl px-6 py-10">
+      <!-- ================= HEADER ================= -->
+
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold">รายชื่อผู้สมัคร</h1>
+
+        <p class="mt-2 text-sm text-slate-500">
+          จัดการและค้นหารายชื่อผู้สมัครเข้าร่วมการแข่งขัน
+        </p>
+      </div>
+
+      <!-- ================= FILTER ================= -->
+
+      <div
+        class="mb-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+      >
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <!-- SEARCH -->
+
+          <div>
+            <label class="mb-2 block text-sm font-medium text-slate-700">
+              ค้นหาชื่อ
+            </label>
+
+            <input
+              id="searchInput"
+              type="text"
+              placeholder="ชื่อ หรือนามสกุล"
+              class="w-full rounded-xl border border-slate-300 px-4 py-2.5 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+            />
+          </div>
+
+          <!-- TYPE -->
+
+          <div>
+            <label class="mb-2 block text-sm font-medium text-slate-700">
+              ประเภท
+            </label>
+
+            <select
+              id="typeFilter"
+              class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+            >
+              <option value="">ทั้งหมด</option>
+            </select>
+          </div>
+
+          <!-- PROGRAM -->
+
+          <div>
+            <label class="mb-2 block text-sm font-medium text-slate-700">
+              รุ่นการแข่งขัน
+            </label>
+
+            <select
+              id="programFilter"
+              class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+            >
+              <option value="">ทั้งหมด</option>
+            </select>
+          </div>
+
+          <!-- NATIONAL -->
+
+          <div>
+            <label class="mb-2 block text-sm font-medium text-slate-700">
+              สัญชาติ
+            </label>
+
+            <select
+              id="nationalFilter"
+              class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+            >
+              <option value="">ทั้งหมด</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mt-4 flex items-center justify-between">
+          <p class="text-sm text-slate-500">
+            พบ
+            <span id="resultCount" class="font-semibold text-slate-900">
+              0
+            </span>
+            รายการ
+          </p>
+
+          <button
+            id="clearFilterButton"
+            type="button"
+            class="text-sm font-medium text-indigo-600 hover:text-indigo-800"
+          >
+            ล้างตัวกรอง
+          </button>
+        </div>
+      </div>
+
+      <!-- ================= TABLE ================= -->
+
+      <div
+        class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+      >
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="border-b border-slate-200 bg-slate-50">
+              <tr>
+                <th class="px-5 py-4 font-semibold">BIB</th>
+
+                <th class="px-5 py-4 font-semibold">ผู้สมัคร</th>
+
+                <th class="px-5 py-4 font-semibold">เบอร์โทร</th>
+
+                <th class="px-5 py-4 font-semibold">อายุ</th>
+
+                <th class="px-5 py-4 font-semibold">สัญชาติ</th>
+
+                <th class="px-5 py-4 font-semibold">เสื้อ</th>
+
+                <th class="px-5 py-4 font-semibold">ประเภท</th>
+
+                <th class="px-5 py-4 font-semibold">รุ่นการแข่งขัน</th>
+              </tr>
+            </thead>
+
+            <tbody
+              id="registrationTable"
+              class="divide-y divide-slate-100"
+            ></tbody>
+          </table>
+        </div>
+
+        <!-- EMPTY -->
+
+        <div id="emptyState" class="hidden px-6 py-16 text-center">
+          <p class="font-medium text-slate-600">ไม่พบข้อมูลผู้สมัคร</p>
+
+          <p class="mt-1 text-sm text-slate-400">
+            ลองเปลี่ยนคำค้นหาหรือตัวกรอง
+          </p>
+        </div>
+
+        <!-- LOADING -->
+
+        <div id="loadingState" class="px-6 py-16 text-center">
+          <div
+            class="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-indigo-600"
+          ></div>
+
+          <p class="mt-4 text-sm text-slate-500">กำลังโหลดข้อมูล...</p>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const API_URL = "/api/v1/program/get-all-runner";
+
+      const PROGRAMS = {
+        "cc3d17e3-dddf-411c-83ac-eb5754c698ee": "Marathon (Thai)",
+
+        "cfc07224-6963-44c8-9eee-d88ea37acd75": "Marathon (International)",
+
+        "5cd0fdae-695e-43d6-94b7-671380016d31": "Half Marathon",
+
+        "e5a5c1b7-2094-4278-92a8-be647da3e950": "Mini Marathon",
+
+        "540b9162-8528-4c1b-acad-4fb212f13706": "Fun Run",
+
+        "ab43482f-beb9-4045-8155-0a940233abc2": "Virtual Run",
+      };
+
+      let registrations = [];
+
+      const table = document.getElementById("registrationTable");
+
+      const searchInput = document.getElementById("searchInput");
+
+      const typeFilter = document.getElementById("typeFilter");
+
+      const programFilter = document.getElementById("programFilter");
+
+      const nationalFilter = document.getElementById("nationalFilter");
+
+      const resultCount = document.getElementById("resultCount");
+
+      const loadingState = document.getElementById("loadingState");
+
+      const emptyState = document.getElementById("emptyState");
+
+      const clearFilterButton = document.getElementById("clearFilterButton");
+
+      async function fetchRegistrations() {
+        try {
+          loadingState.classList.remove("hidden");
+
+          const response = await fetch(API_URL);
+
+          if (!response.ok) {
+            throw new Error(`Request failed: ${response.status}`);
+          }
+
+          const data = await response.json();
+
+          registrations = Array.isArray(data) ? data : (data.data ?? []);
+          setupFilters();
+
+          renderTable(registrations);
+        } catch (error) {
+          console.error("Fetch registrations error:", error);
+
+          table.innerHTML = `
+            <tr>
+              <td
+                colspan="8"
+                class="px-6 py-12 text-center text-rose-600"
+              >
+                ไม่สามารถโหลดข้อมูลผู้สมัครได้
+              </td>
+            </tr>
+          `;
+        } finally {
+          loadingState.classList.add("hidden");
+        }
+      }
+
+      function setupFilters() {
+        const types = [
+          ...new Set(registrations.map((item) => item.type).filter(Boolean)),
+        ];
+
+        const programs = [
+          ...new Set(
+            registrations.map((item) => item.program_id).filter(Boolean),
+          ),
+        ];
+
+        const nationals = [
+          ...new Set(
+            registrations.map((item) => item.national).filter(Boolean),
+          ),
+        ];
+
+        addOptions(typeFilter, types, (value) => {
+          if (value === "ON_SITE") return "On-site";
+          if (value === "VIRTUAL") return "Virtual";
+
+          return value;
+        });
+
+        addOptions(
+          programFilter,
+          programs,
+          (value) => PROGRAMS[value] ?? value,
+        );
+
+        addOptions(nationalFilter, nationals, (value) => value);
+      }
+
+      function addOptions(select, values, labelCallback) {
+        values
+          .sort((a, b) => String(a).localeCompare(String(b)))
+          .forEach((value) => {
+            const option = document.createElement("option");
+
+            option.value = value;
+            option.textContent = labelCallback(value);
+
+            select.appendChild(option);
+          });
+      }
+
+      function applyFilters() {
+        const search = searchInput.value.trim().toLowerCase();
+
+        const type = typeFilter.value;
+
+        const program = programFilter.value;
+
+        const national = nationalFilter.value;
+
+        const filtered = registrations.filter((item) => {
+          const fullName =
+            `${item.first_name ?? ""} ${item.last_name ?? ""}`.toLowerCase();
+
+          const bibNumber = String(item.bib_number ?? "").toLowerCase();
+
+          const matchSearch =
+            !search || fullName.includes(search) || bibNumber.includes(search);
+
+          const matchType = !type || item.type === type;
+
+          const matchProgram = !program || item.program_id === program;
+
+          const matchNational = !national || item.national === national;
+
+          return matchSearch && matchType && matchProgram && matchNational;
+        });
+        renderTable(filtered);
+      }
+
+      function renderTable(data) {
+        table.innerHTML = "";
+
+        resultCount.textContent = data.length;
+
+        if (data.length === 0) {
+          emptyState.classList.remove("hidden");
+          return;
+        }
+
+        emptyState.classList.add("hidden");
+
+        data.forEach((item) => {
+          const row = document.createElement("tr");
+
+          row.className = "transition hover:bg-slate-50";
+          row.addEventListener("click", () => {
+            window.location.href = `/private/admin/runner?runner_id=${item.register_id}`;
+          });
+          const fullName = `${item.first_name ?? ""} ${item.last_name ?? ""}`;
+
+          const programName =
+            PROGRAMS[item.program_id] ?? item.program_id ?? "-";
+
+          const typeName =
+            item.type === "ON_SITE"
+              ? "On-site"
+              : item.type === "VIRTUAL"
+                ? "Virtual"
+                : (item.type ?? "-");
+
+          row.innerHTML = `
+            <td class="px-5 py-4">
+              <span class="font-semibold text-indigo-600">
+                ${escapeHtml(item.bib_number ?? "-")}
+              </span>
+            </td>
+
+            <td class="px-5 py-4">
+              <div class="font-medium text-slate-900">
+                ${escapeHtml(fullName)}
+              </div>
+
+              <div class="mt-1 text-xs text-slate-500">
+                ${escapeHtml(item.email ?? "-")}
+              </div>
+            </td>
+
+            <td class="whitespace-nowrap px-5 py-4">
+              ${escapeHtml(item.phone ?? "-")}
+            </td>
+
+            <td class="px-5 py-4">
+              ${escapeHtml(item.age ?? "-")}
+            </td>
+
+            <td class="px-5 py-4">
+              ${escapeHtml(item.national ?? "-")}
+            </td>
+
+            <td class="px-5 py-4">
+              ${escapeHtml(item.size ?? "-")}
+            </td>
+
+            <td class="px-5 py-4">
+              ${renderTypeBadge(typeName)}
+            </td>
+
+            <td class="whitespace-nowrap px-5 py-4">
+              ${escapeHtml(programName)}
+            </td>
+          `;
+
+          table.appendChild(row);
+        });
+      }
+
+      function renderTypeBadge(type) {
+        if (type === "ON_SITE") {
+          return `
+            <span
+              class="inline-flex rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700"
+            >
+              On-site
+            </span>
+          `;
+        }
+
+        if (type === "VIRTUAL") {
+          return `
+            <span
+              class="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700"
+            >
+              Virtual
+            </span>
+          `;
+        }
+
+        return `
+          <span
+            class="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600"
+          >
+            ${escapeHtml(type)}
+          </span>
+        `;
+      }
+
+      function escapeHtml(value) {
+        const div = document.createElement("div");
+
+        div.textContent = String(value ?? "");
+
+        return div.innerHTML;
+      }
+
+      searchInput.addEventListener("input", applyFilters);
+
+      typeFilter.addEventListener("change", applyFilters);
+
+      programFilter.addEventListener("change", applyFilters);
+
+      nationalFilter.addEventListener("change", applyFilters);
+
+      clearFilterButton.addEventListener("click", () => {
+        searchInput.value = "";
+        typeFilter.value = "";
+        programFilter.value = "";
+        nationalFilter.value = "";
+
+        renderTable(registrations);
+      });
+
+      fetchRegistrations();
+    </script>
+  </body>
+</html>

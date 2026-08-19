@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Marathon Registration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css" />
+    <script
+      defer
+      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+    <style>
+      .page-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 0.9rem;
+        background: rgba(19, 11, 36, 0.64);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        transition:
+          opacity 0.35s ease,
+          visibility 0.35s ease;
+      }
+
+      .page-loader.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      .page-loader-spinner {
+        width: 3rem;
+        height: 3rem;
+        border: 4px solid rgba(255, 255, 255, 0.25);
+        border-top-color: #ffffff;
+        border-radius: 9999px;
+        animation: spin 0.8s linear infinite;
+      }
+
+      .page-loader-text {
+        color: #ffffff;
+        font-size: 0.95rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .loading-spinner {
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        margin-right: 0.5rem;
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        border-top-color: #ffffff;
+        border-radius: 9999px;
+        animation: spin 0.7s linear infinite;
+        vertical-align: middle;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen text-slate-900 relative">
+    <div class="container mx-auto px-4 py-10">
+      <div
+        class="max-w-3xl mx-auto rounded-3xl bg-white p-8 shadow-xl shadow-slate-200"
+      >
+        <div class="mb-8 text-center">
+          <h1 class="text-4xl font-bold text-slate-900">Register Onsite</h1>
+          <p class="mt-2 text-slate-500">
+            กรอกข้อมูลเพื่อสมัครเข้าร่วมการแข่งขัน
+          </p>
+        </div>
+
+        <form
+          id="registrationForm"
+          x-data="registrationForm()"
+          @submit.prevent="submitForm"
+          novalidate
+          class="space-y-6"
+        >
+          <div
+            x-data="imageUpload()"
+            class="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-5"
+          >
+            <div class="text-center">
+              <h2 class="text-lg font-semibold text-slate-900">
+                รูปภาพผู้สมัคร
+              </h2>
+              <p class="text-sm text-slate-500">
+                อัปโหลดรูปภาพเพื่อแสดงในการสมัคร
+              </p>
+            </div>
+
+            <div class="flex justify-center">
+              <label
+                class="group relative flex h-56 w-56 cursor-pointer items-center justify-center rounded-full border-2 border-dashed border-slate-300 bg-white text-center transition hover:border-indigo-500 hover:bg-indigo-50"
+              >
+                <template x-if="preview">
+                  <img
+                    :src="preview"
+                    alt="Preview"
+                    class="h-full w-full rounded-full object-cover"
+                  />
+                </template>
+                <template x-if="!preview">
+                  <div
+                    class="flex flex-col items-center justify-center px-6 text-center"
+                  >
+                    <div
+                      class="flex h-20 w-20 items-center justify-center rounded-full bg-indigo-100 text-indigo-600"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-10 w-10"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14c-4.418 0-8 1.79-8 4v2h16v-2c0-2.21-3.582-4-8-4z"
+                        />
+                      </svg>
+                    </div>
+                    <div class="mt-4 text-sm text-slate-500">
+                      คลิกหรือวางไฟล์เพื่ออัปโหลด
+                    </div>
+                    <div class="mt-2 text-xs text-slate-400">
+                      PNG, JPG หรือ JPEG ขนาดไม่เกิน 5MB
+                    </div>
+                  </div>
+                </template>
+                <input
+                  x-ref="fileInput"
+                  type="file"
+                  accept="image/*"
+                  @change="previewImage"
+                  class="sr-only"
+                />
+              </label>
+            </div>
+          </div>
+
+          <div class="grid gap-6 md:grid-cols-2">
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-slate-700"
+                >ชื่อ</label
+              >
+              <input
+                x-model="firstName"
+                name="firstName"
+                type="text"
+                placeholder="ชื่อ"
+                class="w-[340px] h-[50px] mx-auto rounded-2xl border border-slate-300 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                required
+              />
+              <p
+                id="error-firstName"
+                class="mt-1 hidden text-sm text-rose-600"
+              ></p>
+            </div>
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-slate-700"
+                >นามสกุล</label
+              >
+              <input
+                x-model="lastName"
+                name="lastName"
+                type="text"
+                placeholder="นามสกุล"
+                class="w-[340px] h-[50px] mx-auto rounded-2xl border border-slate-300 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                required
+              />
+              <p
+                id="error-lastName"
+                class="mt-1 hidden text-sm text-rose-600"
+              ></p>
+            </div>
+          </div>
+
+          <div class="grid gap-6 md:grid-cols-2">
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-slate-700"
+                >เบอร์โทรติดต่อ</label
+              >
+              <input
+                x-model="phone"
+                name="phone"
+                type="tel"
+                placeholder="08xxxxxxxx"
+                class="w-[340px] h-[50px] mx-auto rounded-2xl border border-slate-300 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                required
+              />
+              <p id="error-phone" class="mt-1 hidden text-sm text-rose-600"></p>
+            </div>
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-slate-700"
+                >อายุ</label
+              >
+              <input
+                x-model.number="age"
+                name="age"
+                type="number"
+                min="0"
+                placeholder="อายุ"
+                @input="if (category && !categoryOptions().some(option => option.value === category)) category = ''"
+                class="w-[340px] h-[50px] mx-auto rounded-2xl border border-slate-300 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                required
+              />
+              <p id="error-age" class="mt-1 hidden text-sm text-rose-600"></p>
+            </div>
+          </div>
+
+          <div class="grid gap-6 md:grid-cols-2">
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-slate-700"
+                >อีเมล</label
+              >
+              <input
+                x-model="email"
+                name="email"
+                type="email"
+                placeholder="example@mail.com"
+                class="w-[340px] h-[50px] mx-auto rounded-2xl border border-slate-300 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                required
+              />
+              <p id="error-email" class="mt-1 hidden text-sm text-rose-600"></p>
+            </div>
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-slate-700"
+                >สัญชาติ</label
+              >
+              <select
+                x-model="nationality"
+                name="nationality"
+                @change="if (category && !categoryOptions().some(option => option.value === category)) category = ''"
+                class="w-[340px] h-[50px] mx-auto rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                required
+              >
+                <option value="">เลือกสัญชาติ</option>
+                <option>ไทย</option>
+                <option>สหรัฐอเมริกา</option>
+                <option>ญี่ปุ่น</option>
+                <option>จีน</option>
+                <option>เกาหลี</option>
+                <option>อื่น ๆ</option>
+              </select>
+              <p
+                id="error-nationality"
+                class="mt-1 hidden text-sm text-rose-600"
+              ></p>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-slate-700"
+              >ขนาดเสื้อ</label
+            >
+            <select
+              x-model="shirtSize"
+              name="shirtSize"
+              class="w-[340px] h-[50px] mx-auto rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+              required
+            >
+              <option value="">เลือกขนาดเสื้อ</option>
+              <option value="S">S</option>
+              <option value="M">M</option>
+              <option value="L">L</option>
+              <option value="XL">XL</option>
+              <option value="2XL">2XL</option>
+              <option value="Freeside">Freeside</option>
+            </select>
+            <p
+              id="error-shirtSize"
+              class="mt-1 hidden text-sm text-rose-600"
+            ></p>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-slate-700"
+              >รุ่นการแข่งขัน</label
+            >
+            <p class="text-sm text-slate-500">รายการที่สามารถสมัครได้ตามอายุ</p>
+            <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+              <template x-for="option in categoryOptions()" :key="option.value">
+                <label
+                  class="cursor-pointer rounded-2xl border border-slate-300 bg-slate-50 p-4 text-center transition hover:border-indigo-500 hover:bg-indigo-50"
+                >
+                  <input
+                    x-model="category"
+                    type="radio"
+                    name="category"
+                    :value="option.id"
+                    class="mr-2"
+                    required
+                  />
+                  <span x-text="option.label"></span>
+                </label>
+              </template>
+            </div>
+            <div
+              x-show="age && categoryOptions().length === 0"
+              class="text-sm text-rose-600"
+            >
+              อายุต่ำกว่าเกณฑ์หรือไม่มีรุ่นการแข่งขันให้เลือก
+            </div>
+            <p
+              id="error-category"
+              class="mt-1 hidden text-sm text-rose-600"
+            ></p>
+          </div>
+
+          <div
+            class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
+          >
+            <div class="text-slate-500">
+              <p class="text-sm">กรอกข้อมูลให้ครบถ้วนก่อนกดปุ่มส่ง</p>
+            </div>
+            <button
+              type="submit"
+              class="inline-flex items-center justify-center rounded-3xl bg-indigo-600 px-8 py-3 text-white transition hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-200"
+            >
+              ส่งคำสมัคร
+            </button>
+          </div>
+          <div
+            id="validationMessage"
+            class="mt-4 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-rose-800 hidden"
+          ></div>
+        </form>
+
+        <template x-if="message">
+          <div
+            x-text="message"
+            class="mt-6 rounded-2xl border border-green-200 bg-green-50 p-4 text-green-800"
+          ></div>
+        </template>
+      </div>
+    </div>
+    <div
+      id="pageLoader"
+      class="page-loader hidden"
+      aria-live="polite"
+      aria-label="Loading page"
+    >
+      <div class="page-loader-spinner animate-spin"></div>
+      <div class="page-loader-text">Loading...</div>
+    </div>
+
+    <script>
+      const loader = document.getElementById("pageLoader");
+      const body = document.body;
+      let image_path = "";
+      const setLoader = (state) => {
+        loader.classList = state ? ["page-loader"] : ["page-loader hidden"];
+        if (state) {
+          body.classList.add("overflow-hidden");
+        } else {
+          body.classList.remove("overflow-hidden");
+        }
+      };
+
+      const registerHandler = async (payload) => {
+        try {
+          setLoader(true);
+          const response = await fetch("/api/v1/program/register-program", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setLoader(false);
+        }
+      };
+
+      function registrationForm() {
+        return {
+          firstName: "",
+          lastName: "",
+          phone: "",
+          age: null,
+          email: "",
+          nationality: "",
+          shirtSize: "",
+          category: "",
+          message: "",
+          categoryOptions() {
+            const age = Number(this.age);
+            const intl = this.nationality && this.nationality !== "ไทย";
+            const hasAge = !Number.isNaN(age) && age !== null && age !== "";
+
+            const options = [
+              {
+                value: "Marathon (Thai)",
+                label: "Marathon (Thai)",
+                id: "cc3d17e3-dddf-411c-83ac-eb5754c698ee",
+              },
+              {
+                value: "Marathon (Internation)",
+                label: "Marathon (Internation)",
+                id: "cfc07224-6963-44c8-9eee-d88ea37acd75",
+              },
+              {
+                value: "Half Marathon",
+                label: "Half Marathon",
+                id: "5cd0fdae-695e-43d6-94b7-671380016d31",
+              },
+              {
+                value: "Mini Marathon",
+                label: "Mini Marathon",
+                id: "e5a5c1b7-2094-4278-92a8-be647da3e950",
+              },
+              {
+                value: "Fun Run",
+                label: "Fun Run",
+                id: "540b9162-8528-4c1b-acad-4fb212f13706",
+              },
+            ];
+
+            const eligible = [];
+
+            if (intl) {
+              eligible.push(
+                options.find((opt) => opt.value === "Marathon (Internation)"),
+              );
+            }
+
+            if (!intl && hasAge && age >= 20) {
+              eligible.push(
+                options.find((opt) => opt.value === "Marathon (Thai)"),
+              );
+            }
+
+            if (hasAge && age >= 16) {
+              eligible.push(
+                options.find((opt) => opt.value === "Mini Marathon"),
+              );
+            }
+
+            if (hasAge && age >= 20) {
+              eligible.push(
+                options.find((opt) => opt.value === "Half Marathon"),
+              );
+            }
+
+            eligible.push(options.find((opt) => opt.value === "Fun Run"));
+
+            return eligible.filter(Boolean);
+          },
+          async submitForm() {
+            if (
+              !this.firstName ||
+              !this.lastName ||
+              !this.phone ||
+              this.age === null ||
+              this.age === "" ||
+              !this.email ||
+              !this.nationality ||
+              !this.category
+            ) {
+              this.message = "โปรดกรอกข้อมูลให้ครบถ้วนก่อนส่งแบบฟอร์ม";
+              return;
+            }
+
+            const payload = {
+              first_name: this.firstName,
+              last_name: this.lastName,
+              phone: this.phone,
+              age: this.age,
+              email: this.email,
+              national: this.nationality,
+              size: this.shirtSize,
+              program_id: this.category,
+              type: "ON_SITE",
+              image_path: image_path,
+            };
+            await registerHandler(payload);
+            this.message = `ขอบคุณที่ลงทะเบียนวิ่งกับเราแล้วพบกันในงาน`;
+          },
+        };
+      }
+
+      function imageUpload() {
+        return {
+          preview: null,
+          async previewImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              this.preview = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            try {
+              const formData = new FormData();
+              formData.append("image", file);
+              const response = await fetch("/api/v1/upload/profile-images", {
+                method: "POST",
+                body: formData,
+              });
+              const data = await response.json();
+              const path = data.data.path;
+              image_path = path;
+            } catch (error) {
+              console.log(error);
+            }
+          },
+        };
+      }
+    </script>
+    <script src="script.js"></script>
+  </body>
+</html>

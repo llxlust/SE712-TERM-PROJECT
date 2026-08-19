@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Admin Login | CMU Chiang Mai Marathon 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen bg-slate-950 text-slate-800">
+    <div class="relative isolate flex min-h-screen flex-col overflow-hidden">
+      <img
+        src="images/Ang Kaew Reservoir.jpg"
+        alt=""
+        class="absolute inset-0 -z-20 h-full w-full object-cover"
+      />
+      <div
+        class="absolute inset-0 -z-10 bg-gradient-to-br from-slate-950/95 via-slate-900/90 to-violet-950/80"
+      ></div>
+
+      <header class="border-b border-white/10 bg-slate-950/40 backdrop-blur">
+        <nav
+          class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8"
+          aria-label="เมนูหลัก"
+        >
+          <a href="index.html" class="text-xl font-bold text-white sm:text-2xl"
+            >CMU <span class="text-violet-300">Marathon</span></a
+          >
+          <!-- <a
+            href="Login.html"
+            class="rounded-full border border-white/30 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
+            >เข้าสู่ระบบนักวิ่ง</a
+          > -->
+        </nav>
+      </header>
+
+      <main
+        class="mx-auto flex w-full max-w-7xl flex-1 items-center justify-center px-4 py-12 sm:px-6 lg:px-8"
+      >
+        <section
+          class="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl sm:p-9"
+          aria-labelledby="adminTitle"
+        >
+          <div class="text-center">
+            <p
+              class="mt-5 text-sm font-bold uppercase tracking-[0.2em] text-violet-600"
+            >
+              Restricted Area
+            </p>
+            <h1 id="adminTitle" class="mt-2 text-3xl font-black text-slate-900">
+              เข้าสู่ระบบผู้ดูแล
+            </h1>
+            <p class="mt-2 text-sm leading-6 text-slate-500">
+              สำหรับเจ้าหน้าที่ที่ได้รับอนุญาตเท่านั้น
+            </p>
+          </div>
+
+          <form id="adminForm" class="mt-8 space-y-5" novalidate>
+            <div>
+              <label for="adminEmail" class="mb-2 block font-semibold"
+                >อีเมลผู้ดูแล</label
+              >
+              <input
+                id="adminEmail"
+                name="adminEmail"
+                type="email"
+                required
+                autocomplete="username"
+                class="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
+                placeholder="admin@example.com"
+              />
+              <p
+                id="adminEmailError"
+                class="mt-1 hidden text-sm text-rose-600"
+              ></p>
+            </div>
+            <div>
+              <label for="adminPassword" class="mb-2 block font-semibold"
+                >รหัสผ่าน</label
+              >
+              <div class="relative">
+                <input
+                  id="adminPassword"
+                  name="adminPassword"
+                  type="password"
+                  required
+                  minlength="8"
+                  autocomplete="current-password"
+                  class="w-full rounded-xl border border-slate-300 px-4 py-3 pr-20 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
+                  placeholder="อย่างน้อย 8 ตัวอักษร"
+                />
+                <button
+                  id="toggleAdminPassword"
+                  type="button"
+                  class="absolute inset-y-0 right-0 px-4 text-sm font-bold text-violet-600"
+                  aria-label="แสดงรหัสผ่าน"
+                >
+                  แสดง
+                </button>
+              </div>
+              <p
+                id="adminPasswordError"
+                class="mt-1 hidden text-sm text-rose-600"
+              ></p>
+            </div>
+            <!-- <div>
+              <label for="verificationCode" class="mb-2 block font-semibold"
+                >รหัสยืนยัน 6 หลัก</label
+              >
+              <input
+                id="verificationCode"
+                name="verificationCode"
+                type="text"
+                required
+                inputmode="numeric"
+                autocomplete="one-time-code"
+                maxlength="6"
+                pattern="[0-9]{6}"
+                class="w-full rounded-xl border border-slate-300 px-4 py-3 tracking-[0.35em] outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
+                placeholder="000000"
+              />
+              <p id="codeError" class="mt-1 hidden text-sm text-rose-600"></p>
+            </div> -->
+            <button
+              type="submit"
+              class="w-full rounded-full bg-slate-900 px-6 py-3.5 font-bold text-white shadow-lg transition hover:bg-violet-700 focus:outline-none focus:ring-4 focus:ring-violet-200"
+            >
+              เข้าสู่ระบบ Admin
+            </button>
+            <p
+              id="adminStatus"
+              class="hidden rounded-xl p-4 text-center text-sm font-semibold"
+              role="status"
+              aria-live="polite"
+            ></p>
+          </form>
+
+          <!-- <div class="mt-6 border-t border-slate-200 pt-5 text-center">
+            <a
+              href="Login.html"
+              class="text-sm font-bold text-violet-600 hover:text-violet-800"
+              >← กลับไปหน้าเข้าสู่ระบบนักวิ่ง</a
+            >
+          </div> -->
+        </section>
+      </main>
+
+      <footer
+        class="border-t border-white/10 px-4 py-5 text-center text-sm text-slate-300"
+      >
+        &copy; 2026 CMU Chiang Mai Marathon
+      </footer>
+    </div>
+
+    <script>
+      const form = document.getElementById("adminForm");
+      const email = document.getElementById("adminEmail");
+      const password = document.getElementById("adminPassword");
+      // const code = document.getElementById("verificationCode");
+      const toggle = document.getElementById("toggleAdminPassword");
+      const status = document.getElementById("adminStatus");
+
+      toggle.addEventListener("click", () => {
+        const hidden = password.type === "password";
+        password.type = hidden ? "text" : "password";
+        toggle.textContent = hidden ? "ซ่อน" : "แสดง";
+        toggle.setAttribute(
+          "aria-label",
+          hidden ? "ซ่อนรหัสผ่าน" : "แสดงรหัสผ่าน",
+        );
+      });
+
+      // code.addEventListener("input", () => {
+      //   code.value = code.value.replace(/\D/g, "").slice(0, 6);
+      // });
+
+      const loginHandler = async (payload) => {
+        try {
+          const response = await fetch("/api/v1/auth/admin-login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          if (!response.ok) {
+            const emailErr = document.getElementById("adminEmailError");
+            const passwordErr = document.getElementById("adminPasswordError");
+            emailErr.classList.remove("hidden");
+            passwordErr.classList.remove("hidden");
+            emailErr.textContent = "ข้อมูลไม่ถูกต้อง";
+            passwordErr.textContent = "ข้อมูลไม่ถูกต้อง";
+          }
+          const data = await response.json();
+          window.location.href = "/private/admin";
+        } catch (error) {
+          const emailErr = document.getElementById("adminEmailError");
+          const passwordErr = document.getElementById("adminPasswordError");
+          emailErr.textContent = "ข้อมูลไม่ถูกต้อง";
+          passwordErr.textContent = "ข้อมูลไม่ถูกต้อง";
+        }
+      };
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const checks = [
+          {
+            input: email,
+            error: document.getElementById("adminEmailError"),
+            valid: email.validity.valid,
+            message: "กรุณากรอกอีเมลผู้ดูแลให้ถูกต้อง",
+          },
+          {
+            input: password,
+            error: document.getElementById("adminPasswordError"),
+            valid: password.value.length >= 8,
+            message: "รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร",
+          },
+        ];
+        let valid = true;
+        checks.forEach((item) => {
+          item.error.classList.add("hidden");
+          item.input.classList.remove(
+            "border-rose-500",
+            "ring-2",
+            "ring-rose-200",
+          );
+          if (!item.valid) {
+            item.error.textContent = item.message;
+            item.error.classList.remove("hidden");
+            item.input.classList.add(
+              "border-rose-500",
+              "ring-2",
+              "ring-rose-200",
+            );
+            valid = false;
+          }
+        });
+        if (!valid) return;
+        const payload = {
+          email: email.value,
+          password: password.value,
+        };
+
+        await loginHandler(payload);
+      });
+    </script>
+  </body>
+</html>

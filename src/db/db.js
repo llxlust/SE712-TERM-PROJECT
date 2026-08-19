@@ -224,7 +224,6 @@ class Database {
 
     this.store_value = this.store_value.map((row) => {
       const matched = this.applyFilters([row]).length > 0;
-      console.log(matched, ":matched");
       if (!matched) {
         return row;
       }

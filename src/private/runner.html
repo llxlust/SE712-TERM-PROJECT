@@ -1,0 +1,1357 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <title>Runner Profile</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        min-height: 100vh;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        background: #f4f5f7;
+        color: #1e293b;
+      }
+
+      /* =========================
+         LOADING
+      ========================= */
+
+      .loading-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .loading-content {
+        text-align: center;
+      }
+
+      .spinner {
+        width: 42px;
+        height: 42px;
+        margin: 0 auto 16px;
+        border: 4px solid #e2e8f0;
+        border-top-color: #7c3aed;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      .loading-text {
+        color: #64748b;
+        font-size: 14px;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* =========================
+         ERROR
+      ========================= */
+
+      .error-container {
+        min-height: 100vh;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .error-card {
+        width: 100%;
+        max-width: 420px;
+        background: white;
+        padding: 40px 30px;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+      }
+
+      .error-icon {
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 18px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 50%;
+        background: #fee2e2;
+
+        color: #dc2626;
+        font-size: 24px;
+        font-weight: 700;
+      }
+
+      .error-card h2 {
+        font-size: 20px;
+        margin-bottom: 8px;
+      }
+
+      .error-card p {
+        color: #64748b;
+        font-size: 14px;
+      }
+
+      /* =========================
+         MAIN
+      ========================= */
+
+      .runner-container {
+        width: 100%;
+        max-width: 950px;
+        margin: 0 auto;
+        padding: 50px 20px;
+
+        display: none;
+      }
+
+      .page-header {
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+
+      .edit-button {
+        border: none;
+        background: #7c3aed;
+        color: white;
+
+        padding: 11px 18px;
+        border-radius: 10px;
+
+        font-size: 14px;
+        font-weight: 600;
+
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      .edit-button:hover {
+        background: #6d28d9;
+      }
+
+      .edit-button:active {
+        transform: scale(0.98);
+      }
+
+      .page-label {
+        color: #7c3aed;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      .page-title {
+        margin-top: 6px;
+        font-size: 30px;
+        font-weight: 700;
+        color: #0f172a;
+      }
+
+      /* =========================
+         CARD
+      ========================= */
+
+      .runner-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 24px;
+        overflow: hidden;
+
+        box-shadow:
+          0 1px 3px rgba(0, 0, 0, 0.04),
+          0 10px 30px rgba(0, 0, 0, 0.04);
+      }
+
+      /* =========================
+         PROFILE
+      ========================= */
+
+      .profile-section {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+
+        padding: 30px;
+
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .profile-image {
+        width: 120px;
+        height: 120px;
+
+        object-fit: cover;
+
+        border-radius: 18px;
+        border: 1px solid #e2e8f0;
+
+        background: #f1f5f9;
+      }
+
+      .profile-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .name-row {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .runner-name {
+        font-size: 26px;
+        font-weight: 700;
+        color: #0f172a;
+      }
+
+      .runner-type {
+        padding: 5px 12px;
+
+        border-radius: 999px;
+
+        background: #ede9fe;
+        color: #6d28d9;
+
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .runner-email {
+        margin-top: 5px;
+
+        color: #64748b;
+        font-size: 14px;
+      }
+
+      /* =========================
+         BIB
+      ========================= */
+
+      .bib-container {
+        margin-top: 20px;
+      }
+
+      .bib-label {
+        color: #94a3b8;
+        font-size: 11px;
+        font-weight: 700;
+
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      .bib-number {
+        margin-top: 3px;
+
+        color: #7c3aed;
+
+        font-size: 38px;
+        font-weight: 800;
+
+        letter-spacing: -1px;
+      }
+
+      /* =========================
+         DETAILS
+      ========================= */
+
+      .details-section {
+        padding: 30px;
+
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+
+        gap: 28px 24px;
+      }
+
+      .detail-item {
+        min-width: 0;
+      }
+
+      .detail-label {
+        margin-bottom: 6px;
+
+        color: #94a3b8;
+
+        font-size: 11px;
+        font-weight: 700;
+
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+      }
+
+      .detail-value {
+        color: #334155;
+
+        font-size: 15px;
+        font-weight: 500;
+
+        word-break: break-word;
+      }
+
+      .detail-wide {
+        grid-column: span 2;
+      }
+
+      .detail-full {
+        grid-column: 1 / -1;
+      }
+
+      .mono {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+
+        color: #64748b;
+        font-size: 13px;
+      }
+
+      /* =========================
+   EDIT MODAL
+========================= */
+
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+
+        display: none;
+        align-items: center;
+        justify-content: center;
+
+        padding: 20px;
+
+        background: rgba(15, 23, 42, 0.55);
+        backdrop-filter: blur(4px);
+      }
+
+      .modal-overlay.show {
+        display: flex;
+      }
+
+      .modal {
+        width: 100%;
+        max-width: 720px;
+        max-height: calc(100vh - 40px);
+
+        overflow-y: auto;
+
+        background: white;
+        border-radius: 20px;
+
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+      }
+
+      .modal-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+
+        padding: 24px 26px;
+
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .modal-header h2 {
+        color: #0f172a;
+        font-size: 21px;
+      }
+
+      .modal-header p {
+        margin-top: 5px;
+
+        color: #64748b;
+        font-size: 13px;
+      }
+
+      .close-button {
+        width: 36px;
+        height: 36px;
+
+        border: none;
+        border-radius: 8px;
+
+        background: #f1f5f9;
+        color: #475569;
+
+        font-size: 25px;
+        line-height: 1;
+
+        cursor: pointer;
+      }
+
+      #editForm {
+        padding: 26px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form-full {
+        grid-column: 1 / -1;
+      }
+
+      .form-group label {
+        margin-bottom: 7px;
+
+        color: #334155;
+
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        height: 44px;
+
+        padding: 0 12px;
+
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+
+        outline: none;
+
+        background: white;
+        color: #0f172a;
+
+        font-size: 14px;
+
+        transition: 0.15s;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus {
+        border-color: #7c3aed;
+
+        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+      }
+
+      .form-group input.invalid,
+      .form-group select.invalid {
+        border-color: #dc2626;
+
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08);
+      }
+
+      .field-error {
+        min-height: 17px;
+        margin-top: 5px;
+
+        color: #dc2626;
+
+        font-size: 12px;
+      }
+
+      .form-message {
+        display: none;
+
+        margin-top: 20px;
+        padding: 12px 14px;
+
+        border-radius: 8px;
+
+        font-size: 13px;
+      }
+
+      .form-message.error {
+        display: block;
+
+        background: #fef2f2;
+        color: #b91c1c;
+
+        border: 1px solid #fecaca;
+      }
+
+      .form-message.success {
+        display: block;
+
+        background: #f0fdf4;
+        color: #15803d;
+
+        border: 1px solid #bbf7d0;
+      }
+
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+
+        margin-top: 25px;
+        padding-top: 20px;
+
+        border-top: 1px solid #e2e8f0;
+      }
+
+      .cancel-button,
+      .save-button {
+        padding: 11px 18px;
+
+        border-radius: 9px;
+
+        font-size: 14px;
+        font-weight: 600;
+
+        cursor: pointer;
+      }
+
+      .cancel-button {
+        border: 1px solid #cbd5e1;
+
+        background: white;
+        color: #475569;
+      }
+
+      .save-button {
+        border: none;
+
+        background: #7c3aed;
+        color: white;
+      }
+
+      .save-button:hover {
+        background: #6d28d9;
+      }
+
+      .save-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      @media (max-width: 600px) {
+        .page-header {
+          align-items: flex-start;
+        }
+
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .form-full {
+          grid-column: 1;
+        }
+
+        .modal {
+          max-height: calc(100vh - 20px);
+        }
+
+        .modal-overlay {
+          padding: 10px;
+        }
+      }
+
+      /* =========================
+         RESPONSIVE
+      ========================= */
+
+      @media (max-width: 700px) {
+        .runner-container {
+          padding: 30px 15px;
+        }
+
+        .profile-section {
+          flex-direction: column;
+          align-items: flex-start;
+
+          padding: 24px;
+        }
+
+        .profile-image {
+          width: 100px;
+          height: 100px;
+        }
+
+        .details-section {
+          grid-template-columns: repeat(2, 1fr);
+          padding: 24px;
+        }
+
+        .detail-wide {
+          grid-column: 1 / -1;
+        }
+      }
+
+      @media (max-width: 450px) {
+        .page-title {
+          font-size: 26px;
+        }
+
+        .runner-name {
+          font-size: 22px;
+        }
+
+        .bib-number {
+          font-size: 32px;
+        }
+
+        .details-section {
+          grid-template-columns: 1fr;
+        }
+
+        .detail-wide,
+        .detail-full {
+          grid-column: 1;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- =========================
+         LOADING
+    ========================== -->
+
+    <div id="loading" class="loading-container">
+      <div class="loading-content">
+        <div class="spinner"></div>
+        <p class="loading-text">กำลังโหลดข้อมูลนักวิ่ง...</p>
+      </div>
+    </div>
+
+    <!-- =========================
+         ERROR
+    ========================== -->
+
+    <div id="errorState" class="error-container">
+      <div class="error-card">
+        <div class="error-icon">!</div>
+
+        <h2>ไม่พบข้อมูลนักวิ่ง</h2>
+
+        <p id="errorMessage">กรุณาตรวจสอบ Runner ID</p>
+      </div>
+    </div>
+
+    <!-- =========================
+         CONTENT
+    ========================== -->
+
+    <main id="runnerContent" class="runner-container">
+      <div class="page-header">
+        <div>
+          <div class="page-label">Marathon Registration</div>
+          <h1 class="page-title">ข้อมูลนักวิ่ง</h1>
+        </div>
+
+        <div style="display: flex; gap: 20px">
+          <button id="editButton" class="edit-button" type="button">
+            แก้ไขข้อมูล
+          </button>
+          <button id="exportButton" class="edit-button" type="button">
+            ปริ้น BIB
+          </button>
+        </div>
+      </div>
+
+      <div class="runner-card">
+        <!-- PROFILE -->
+
+        <section class="profile-section">
+          <img id="profileImage" class="profile-image" alt="Runner Profile" />
+
+          <div class="profile-info">
+            <div class="name-row">
+              <h2 id="runnerName" class="runner-name"></h2>
+
+              <span id="runnerType" class="runner-type"></span>
+            </div>
+
+            <div id="runnerEmail" class="runner-email"></div>
+
+            <div class="bib-container">
+              <div class="bib-label">BIB Number</div>
+
+              <div id="bibNumber" class="bib-number"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- DETAILS -->
+
+        <section class="details-section">
+          <div class="detail-item">
+            <div class="detail-label">ชื่อ</div>
+            <div id="firstName" class="detail-value"></div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">นามสกุล</div>
+            <div id="lastName" class="detail-value"></div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">อายุ</div>
+            <div id="age" class="detail-value"></div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">สัญชาติ</div>
+            <div id="national" class="detail-value"></div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">เบอร์โทรศัพท์</div>
+            <div id="phone" class="detail-value"></div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">ขนาดเสื้อ</div>
+            <div id="shirtSize" class="detail-value"></div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">ประเภท</div>
+            <div id="type" class="detail-value"></div>
+          </div>
+
+          <div class="detail-item detail-wide">
+            <div class="detail-label">Program</div>
+            <div id="programId" class="detail-value mono"></div>
+          </div>
+
+          <div class="detail-item detail-full">
+            <div class="detail-label"></div>
+            <div id="registerId" class="detail-value mono"></div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <div id="editModal" class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <div>
+            <h2>แก้ไขข้อมูลนักวิ่ง</h2>
+            <p>แก้ไขข้อมูลที่ต้องการแล้วกดบันทึก</p>
+          </div>
+
+          <button id="closeModalButton" class="close-button" type="button">
+            ×
+          </button>
+        </div>
+
+        <form id="editForm" novalidate>
+          <div class="form-grid">
+            <!-- FIRST NAME -->
+
+            <div class="form-group">
+              <label for="editFirstName">ชื่อ</label>
+
+              <input
+                id="editFirstName"
+                name="first_name"
+                type="text"
+                autocomplete="given-name"
+              />
+
+              <span id="editFirstNameError" class="field-error"></span>
+            </div>
+
+            <!-- LAST NAME -->
+
+            <div class="form-group">
+              <label for="editLastName">นามสกุล</label>
+
+              <input
+                id="editLastName"
+                name="last_name"
+                type="text"
+                autocomplete="family-name"
+              />
+
+              <span id="editLastNameError" class="field-error"></span>
+            </div>
+
+            <!-- PHONE -->
+
+            <div class="form-group">
+              <label for="editPhone">เบอร์โทรศัพท์</label>
+
+              <input
+                id="editPhone"
+                name="phone"
+                type="tel"
+                inputmode="numeric"
+                autocomplete="tel"
+              />
+
+              <span id="editPhoneError" class="field-error"></span>
+            </div>
+
+            <!-- AGE -->
+
+            <div class="form-group">
+              <label for="editAge">อายุ</label>
+
+              <input id="editAge" name="age" type="number" min="1" max="120" />
+
+              <span id="editAgeError" class="field-error"></span>
+            </div>
+
+            <!-- EMAIL -->
+
+            <div class="form-group">
+              <label for="editEmail">อีเมล</label>
+
+              <input
+                id="editEmail"
+                name="email"
+                type="email"
+                autocomplete="email"
+              />
+
+              <span id="editEmailError" class="field-error"></span>
+            </div>
+
+            <!-- NATIONAL -->
+
+            <div class="form-group">
+              <label for="editNational">สัญชาติ</label>
+
+              <select id="editNational" name="national">
+                <option value="">เลือกสัญชาติ</option>
+                <option value="ไทย">ไทย</option>
+                <option value="สหรัฐอเมริกา">สหรัฐอเมริกา</option>
+                <option value="ญี่ปุ่น">ญี่ปุ่น</option>
+                <option value="จีน">จีน</option>
+                <option value="เกาหลี">เกาหลี</option>
+                <option value="อื่น ๆ">อื่น ๆ</option>
+              </select>
+
+              <span id="editNationalError" class="field-error"></span>
+            </div>
+
+            <!-- SIZE -->
+
+            <div class="form-group">
+              <label for="editSize">ขนาดเสื้อ</label>
+
+              <select id="editSize" name="size">
+                <option value="">เลือกขนาดเสื้อ</option>
+                <option value="XS">XS</option>
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+                <option value="2XL">2XL</option>
+                <option value="3XL">3XL</option>
+              </select>
+
+              <span id="editSizeError" class="field-error"></span>
+            </div>
+
+            <!-- TYPE -->
+
+            <div class="form-group">
+              <label for="editType">ประเภทการสมัคร</label>
+
+              <select id="editType" name="type">
+                <option value="">เลือกประเภท</option>
+                <option value="ON_SITE">ON SITE</option>
+                <option value="VIRTUAL">VIRTUAL</option>
+              </select>
+
+              <span id="editTypeError" class="field-error"></span>
+            </div>
+
+            <!-- PROGRAM -->
+
+            <div class="form-group form-full">
+              <label for="editProgram">Program</label>
+
+              <select id="editProgram" name="program_id">
+                <option value="">เลือก Program</option>
+
+                <option value="cc3d17e3-dddf-411c-83ac-eb5754c698ee">
+                  Marathon (Thai)
+                </option>
+
+                <option value="cfc07224-6963-44c8-9eee-d88ea37acd75">
+                  Marathon (International)
+                </option>
+
+                <option value="5cd0fdae-695e-43d6-94b7-671380016d31">
+                  Half Marathon
+                </option>
+
+                <option value="e5a5c1b7-2094-4278-92a8-be647da3e950">
+                  Mini Marathon
+                </option>
+
+                <option value="540b9162-8528-4c1b-acad-4fb212f13706">
+                  Fun Run
+                </option>
+
+                <option value="ab43482f-beb9-4045-8155-0a940233abc2">
+                  Virtual Run
+                </option>
+              </select>
+
+              <span id="editProgramError" class="field-error"></span>
+            </div>
+          </div>
+
+          <div id="formMessage" class="form-message"></div>
+
+          <div class="modal-actions">
+            <button id="cancelEditButton" class="cancel-button" type="button">
+              ยกเลิก
+            </button>
+
+            <button id="saveButton" class="save-button" type="submit">
+              บันทึกข้อมูล
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      const loading = document.getElementById("loading");
+      const errorState = document.getElementById("errorState");
+      const runnerContent = document.getElementById("runnerContent");
+
+      const PROGRAMS = {
+        "cc3d17e3-dddf-411c-83ac-eb5754c698ee": "Marathon (Thai)",
+
+        "cfc07224-6963-44c8-9eee-d88ea37acd75": "Marathon (International)",
+
+        "5cd0fdae-695e-43d6-94b7-671380016d31": "Half Marathon",
+
+        "e5a5c1b7-2094-4278-92a8-be647da3e950": "Mini Marathon",
+
+        "540b9162-8528-4c1b-acad-4fb212f13706": "Fun Run",
+
+        "ab43482f-beb9-4045-8155-0a940233abc2": "Virtual Run",
+      };
+
+      function setText(id, value) {
+        document.getElementById(id).textContent = value ?? "-";
+      }
+
+      function showError(message) {
+        loading.style.display = "none";
+        runnerContent.style.display = "none";
+
+        errorState.style.display = "flex";
+
+        document.getElementById("errorMessage").textContent = message;
+      }
+
+      function renderRunner(runner) {
+        currentRunner = runner;
+        setText(
+          "runnerName",
+          `${runner.first_name ?? ""} ${runner.last_name ?? ""}`,
+        );
+
+        setText("runnerEmail", runner.email);
+        setText("bibNumber", runner.bib_number);
+        setText("runnerType", runner.type.split("_").join(" "));
+
+        setText("firstName", runner.first_name);
+        setText("lastName", runner.last_name);
+
+        setText(
+          "age",
+          runner.age !== undefined && runner.age !== null
+            ? `${runner.age} ปี`
+            : "-",
+        );
+
+        setText("national", runner.national);
+        setText("phone", runner.phone);
+        setText("shirtSize", runner.size);
+        setText("type", runner.type.split("_").join(" "));
+        setText("programId", PROGRAMS[runner.program_id]);
+        // setText("registerId", runner.register_id);
+
+        /* =========================
+           PROFILE IMAGE
+        ========================== */
+
+        const profileImage = document.getElementById("profileImage");
+
+        if (runner.image_path) {
+          console.log(runner.image_path);
+          profileImage.src = `/${runner.image_path}`;
+        } else {
+          profileImage.src = "https://placehold.co/300x300?text=Runner";
+        }
+
+        profileImage.onerror = function () {
+          this.onerror = null;
+
+          this.src = "https://placehold.co/300x300?text=Runner";
+        };
+
+        /* SHOW */
+
+        loading.style.display = "none";
+        errorState.style.display = "none";
+        runnerContent.style.display = "block";
+      }
+
+      async function loadRunner() {
+        try {
+          const params = new URLSearchParams(window.location.search);
+
+          const runnerId = params.get("runner_id");
+
+          if (!runnerId) {
+            showError("ไม่พบ runner_id ใน URL");
+            return;
+          }
+
+          /*
+           * GET:
+           *
+           * /api/v1/program/runner/:runner_id
+           */
+
+          const response = await fetch(
+            `/api/v1/program/runner/${encodeURIComponent(runnerId)}`,
+          );
+
+          if (!response.ok) {
+            if (response.status === 404) {
+              showError("ไม่พบข้อมูลนักวิ่ง");
+              return;
+            }
+
+            throw new Error(`HTTP ${response.status}`);
+          }
+
+          const data = await response.json();
+          renderRunner(data.data);
+        } catch (error) {
+          console.error("Load runner error:", error);
+
+          showError("เกิดข้อผิดพลาดในการโหลดข้อมูล");
+        }
+      }
+
+      loadRunner();
+
+      let currentRunner = null;
+
+      const editModal = document.getElementById("editModal");
+      const editForm = document.getElementById("editForm");
+      const editButton = document.getElementById("editButton");
+      const closeModalButton = document.getElementById("closeModalButton");
+      const cancelEditButton = document.getElementById("cancelEditButton");
+      const saveButton = document.getElementById("saveButton");
+
+      const FIELD_ERRORS = {
+        first_name: "editFirstNameError",
+        last_name: "editLastNameError",
+        phone: "editPhoneError",
+        age: "editAgeError",
+        email: "editEmailError",
+        national: "editNationalError",
+        size: "editSizeError",
+        type: "editTypeError",
+        program_id: "editProgramError",
+      };
+
+      function clearValidation() {
+        Object.values(FIELD_ERRORS).forEach((errorId) => {
+          document.getElementById(errorId).textContent = "";
+        });
+
+        editForm.querySelectorAll("input, select").forEach((input) => {
+          input.classList.remove("invalid");
+        });
+
+        const formMessage = document.getElementById("formMessage");
+
+        formMessage.className = "form-message";
+        formMessage.textContent = "";
+      }
+
+      function setFieldError(fieldName, message) {
+        const input = editForm.elements[fieldName];
+
+        const errorId = FIELD_ERRORS[fieldName];
+
+        if (input) {
+          input.classList.add("invalid");
+        }
+
+        if (errorId) {
+          document.getElementById(errorId).textContent = message;
+        }
+      }
+
+      function openEditModal() {
+        if (!currentRunner) return;
+
+        clearValidation();
+
+        editForm.elements.first_name.value = currentRunner.first_name ?? "";
+
+        editForm.elements.last_name.value = currentRunner.last_name ?? "";
+
+        editForm.elements.phone.value = currentRunner.phone ?? "";
+
+        editForm.elements.age.value = currentRunner.age ?? "";
+
+        editForm.elements.email.value = currentRunner.email ?? "";
+
+        editForm.elements.national.value = currentRunner.national ?? "";
+
+        editForm.elements.size.value = currentRunner.size ?? "";
+
+        editForm.elements.type.value = currentRunner.type ?? "";
+
+        editForm.elements.program_id.value = currentRunner.program_id ?? "";
+
+        editModal.classList.add("show");
+
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeEditModal() {
+        editModal.classList.remove("show");
+
+        document.body.style.overflow = "";
+      }
+
+      editButton.addEventListener("click", openEditModal);
+
+      closeModalButton.addEventListener("click", closeEditModal);
+
+      cancelEditButton.addEventListener("click", closeEditModal);
+
+      editModal.addEventListener("click", (event) => {
+        if (event.target === editModal) {
+          closeEditModal();
+        }
+      });
+
+      function validateEditForm(payload) {
+        clearValidation();
+
+        let valid = true;
+
+        if (!payload.first_name) {
+          setFieldError("first_name", "กรุณากรอกชื่อ");
+          valid = false;
+        }
+
+        if (!payload.last_name) {
+          setFieldError("last_name", "กรุณากรอกนามสกุล");
+          valid = false;
+        }
+
+        /* เบอร์ไทย 10 หลัก */
+
+        if (!payload.phone) {
+          setFieldError("phone", "กรุณากรอกเบอร์โทรศัพท์");
+          valid = false;
+        } else if (!/^0\d{9}$/.test(payload.phone)) {
+          setFieldError(
+            "phone",
+            "เบอร์โทรศัพท์ต้องขึ้นต้นด้วย 0 และมี 10 หลัก",
+          );
+
+          valid = false;
+        }
+
+        if (!payload.age) {
+          setFieldError("age", "กรุณากรอกอายุ");
+          valid = false;
+        } else if (
+          !Number.isInteger(payload.age) ||
+          payload.age < 1 ||
+          payload.age > 120
+        ) {
+          setFieldError("age", "อายุต้องอยู่ระหว่าง 1 - 120 ปี");
+          valid = false;
+        }
+
+        if (!payload.email) {
+          setFieldError("email", "กรุณากรอกอีเมล");
+          valid = false;
+        } else {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+          if (!emailRegex.test(payload.email)) {
+            setFieldError("email", "รูปแบบอีเมลไม่ถูกต้อง");
+            valid = false;
+          }
+        }
+
+        if (!payload.national) {
+          setFieldError("national", "กรุณากรอกสัญชาติ");
+          valid = false;
+        }
+
+        if (!payload.size) {
+          setFieldError("size", "กรุณาเลือกขนาดเสื้อ");
+          valid = false;
+        }
+
+        if (!payload.type) {
+          setFieldError("type", "กรุณาเลือกประเภทการสมัคร");
+          valid = false;
+        }
+
+        if (!payload.program_id) {
+          setFieldError("program_id", "กรุณาเลือก Program");
+          valid = false;
+        }
+
+        return valid;
+      }
+
+      async function updateRunner(event) {
+        event.preventDefault();
+
+        const params = new URLSearchParams(window.location.search);
+        const runnerId = params.get("runner_id");
+
+        if (!runnerId) {
+          return;
+        }
+
+        const payload = {
+          first_name: editForm.elements.first_name.value.trim(),
+          last_name: editForm.elements.last_name.value.trim(),
+          phone: editForm.elements.phone.value.trim(),
+          age: Number(editForm.elements.age.value),
+          email: editForm.elements.email.value.trim(),
+          national: editForm.elements.national.value.trim(),
+          size: editForm.elements.size.value,
+          type: editForm.elements.type.value,
+          program_id: editForm.elements.program_id.value,
+        };
+
+        if (!validateEditForm(payload)) {
+          return;
+        }
+
+        const formMessage = document.getElementById("formMessage");
+
+        try {
+          saveButton.disabled = true;
+          saveButton.textContent = "กำลังบันทึก...";
+
+          const response = await fetch(
+            `/api/v1/program/runner/${encodeURIComponent(runnerId)}`,
+            {
+              method: "PATCH",
+
+              headers: {
+                "Content-Type": "application/json",
+              },
+
+              body: JSON.stringify(payload),
+            },
+          );
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            formMessage.className = "form-message error";
+
+            formMessage.textContent = data.message ?? "ไม่สามารถแก้ไขข้อมูลได้";
+
+            return;
+          }
+
+          currentRunner = data.data;
+          console.log(currentRunner);
+          renderRunner(currentRunner);
+
+          formMessage.className = "form-message success";
+          formMessage.textContent = "บันทึกข้อมูลเรียบร้อยแล้ว";
+
+          setTimeout(() => {
+            closeEditModal();
+          }, 600);
+        } catch (error) {
+          console.error("Update runner error:", error);
+
+          formMessage.className = "form-message error";
+
+          formMessage.textContent = "เกิดข้อผิดพลาดในการเชื่อมต่อกับ Server";
+        } finally {
+          saveButton.disabled = false;
+          saveButton.textContent = "บันทึกข้อมูล";
+        }
+      }
+
+      editForm.addEventListener("submit", updateRunner);
+
+      document
+        .getElementById("exportButton")
+        .addEventListener("click", async () => {
+          const runnerCard = document.querySelector(".runner-card");
+
+          await exportElementAsImage(
+            runnerCard,
+            `${currentRunner.bib_number}.png`,
+          );
+        });
+
+      async function exportElementAsImage(element, fileName = "runner.png") {
+        if (!element) {
+          throw new Error("Element not found");
+        }
+
+        try {
+          const canvas = await html2canvas(element, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: "#ffffff",
+            logging: false,
+          });
+
+          const image = canvas.toDataURL("image/png");
+
+          const link = document.createElement("a");
+
+          link.href = image;
+          link.download = fileName;
+
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+
+          return image;
+        } catch (error) {
+          console.error("Export image error:", error);
+          throw error;
+        }
+      }
+    </script>
+  </body>
+</html>
